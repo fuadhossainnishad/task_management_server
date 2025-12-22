@@ -130,6 +130,19 @@ const login: RequestHandler = catchAsync(async (req, res) => {
 
 });
 
+const requestVerifyMail: RequestHandler = catchAsync(async (req, res) => {
+  const { email } = req.body.data
+  const result = await AuthServices.requestVerifyEmailService(email);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: `OTP sent to your email:${email}`,
+    data: result,
+  });
+});
+
+
 const requestForgotPassword: RequestHandler = catchAsync(async (req, res) => {
   const { email } = req.body.data
   const result = await AuthServices.requestForgotPasswordService(email);
@@ -240,6 +253,7 @@ const AuthController = {
   signUp,
   login,
   requestForgotPassword,
+  requestVerifyMail,
   verifyOtp,
   resetPassword,
   updatePassword,

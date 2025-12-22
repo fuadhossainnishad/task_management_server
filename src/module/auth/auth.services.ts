@@ -1,7 +1,6 @@
 import httpStatus from "http-status";
 import AppError from "../../app/error/AppError";
 import { sendMail } from "../../app/mailer/sendMail";
-import { emailRegex } from "../../constants/regex.constants";
 import { idConverter } from "../../utility/idConverter";
 import { IJwtPayload, ISignIn } from "./auth.interface";
 import { TResetPassword, TUpdatePassword, TVerifyOtp } from "./auth.constant";
@@ -51,15 +50,68 @@ const loginService = async (payload: ISignIn) => {
 const requestForgotPasswordService = async (email: string) => {
   console.log("email: ", email);
 
-  if (!emailRegex.test(email)) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Invalid email format", "");
-  }
+  // if (!emailRegex.test(email)) {
+  //   throw new AppError(httpStatus.BAD_REQUEST, "Invalid email format", "");
+  // }
 
   const QueryModel = Admin;
 
   const user = await QueryModel.findOne({ email });
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "Email not registered before", "");
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+  await Otp.deleteMany({ email });
+
+  const subject = "forgot password";
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2>Password Reset Request</h2>
+      <p>Use the following OTP to reset your password:</p>
+      <h3 style="background: #f0f0f0; padding: 10px; display: inline-block;">${otp}</h3>
+      <p>This code expires in 10 minutes.</p>
+      <p>If you didn't request this, please ignore this email.</p>
+    </div>
+  `;
+
+  try {
+    await sendMail(email, subject, html);
+
+    const result = await Otp.create({
+      email,
+      otp,
+      expiresAt,
+    });
+
+    return {
+      email: result.email,
+      otp: otp,
+      expiresAt: result.expiresAt,
+    };
+  } catch (error) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to process password reset request",
+      error as string
+    );
+  }
+};
+
+const requestVerifyEmailService = async (email: string) => {
+  console.log("email: ", email);
+
+  // if (!emailRegex.test(email)) {
+  //   throw new AppError(httpStatus.BAD_REQUEST, "Invalid email format", "");
+  // }
+
+  const QueryModel = Admin;
+
+  const user = await QueryModel.findOne({ email });
+  if (user) {
+    throw new AppError(httpStatus.NOT_FOUND, "Email registered before", "");
   }
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -219,6 +271,7 @@ const GenerateToken = async (payload: IJwtPayload) => {
 const AuthServices = {
   loginService,
   requestForgotPasswordService,
+  requestVerifyEmailService,
   verifyOtpService,
   resetPasswordService,
   updatePasswordService,

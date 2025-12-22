@@ -73,7 +73,7 @@ const updatePasswordValidation = z.object({
   }),
 });
 
-const forgotPasswordValidation = z.object({
+const emailValidation = z.object({
   body: z.object({
     data: z.object({
       email: z
@@ -103,7 +103,7 @@ const AuthValidationSchema = {
   userSignInValidation,
   resetPasswordValidation,
   updatePasswordValidation,
-  forgotPasswordValidation,
+  emailValidation,
   verifyOtpdValidation,
   playerSignUpValidation,
 };

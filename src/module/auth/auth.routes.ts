@@ -26,8 +26,14 @@ router.post(
 );
 
 router.post(
+  "/verify_email",
+  validationRequest(AuthValidationSchema.emailValidation),
+  AuthController.requestVerifyMail
+);
+
+router.post(
   "/forget_password",
-  validationRequest(AuthValidationSchema.forgotPasswordValidation),
+  validationRequest(AuthValidationSchema.emailValidation),
   AuthController.requestForgotPassword
 );
 
