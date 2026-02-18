@@ -11,6 +11,7 @@ import { socketio } from "./app/config/socketio.config";
 import path from "path";
 import PaymentController from "./module/payment/payment.controller";
 import auth from "./middleware/auth";
+import { initializeFirebase } from "./app/config/firebase.config";
 
 const app = express();
 // const allowedOrigins = ["http://192.168.56.1:3000", "*"];
@@ -18,6 +19,15 @@ const allowedOrigins = ["http://localhost:3000"];
 
 export const httpServer = createServer(app);
 socketio(httpServer);
+
+try {
+  initializeFirebase();
+  console.log('✅ Firebase Admin SDK initialized for push notifications');
+} catch (error) {
+  console.error('❌ Firebase initialization failed:', error);
+  // Don't crash the app if Firebase fails
+}
+
 
 const rateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

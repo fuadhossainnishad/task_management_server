@@ -1,12 +1,27 @@
 import { Types } from "mongoose";
 import { TRole } from "../../types/express";
 
-export const Role = ["User", "Brand", "Admin"] as const;
+export const Role = ["User", "Admin"] as const;
 
 // export interface IAuthProvider extends Document {
 //   sub: string;
 //   authProviderName: string;
 // }
+
+export interface IFCMToken {
+  token: string;
+  device: 'ios' | 'android' | 'web';
+  addedAt: Date;
+}
+
+export interface INotificationSettings {
+  pushEnabled: boolean;
+  emailEnabled: boolean;
+  orderUpdates: boolean;
+  promotions: boolean;
+  rewards: boolean;
+  withdrawals: boolean;
+}
 export interface ISignIn {
   // isAuthProvider?: boolean;
   email: string;
@@ -16,21 +31,25 @@ export interface ISignIn {
   // authProvider?: IAuthProvider[];
 }
 export interface ISignup extends ISignIn {
-  firstName: string;
-  lastName: string;
+  companyName: string;
+  ownerName: string;
   userName: string;
-  profile: string[],
-  coverPhoto: string[],
+  companyLogo: string[],
+  ownerPhoto: string[],
   countryCode: string;
   mobile: string;
   confirmedPassword: string;
   role: TRole;
+  appColor: string
   passwordUpdatedAt?: Date
   last_login?: Date
   failed_attempts?: number
   stripe_customer_id: string;
   fcm: string
-  // agreeTcp: boolean;
+  fcmTokens?: IFCMToken[];
+  notificationSettings?: INotificationSettings;
+  agreeTcp: boolean;
+  isMailVerified: boolean
 }
 
 export interface IOtp {

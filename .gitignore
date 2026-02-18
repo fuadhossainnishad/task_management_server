@@ -46,3 +46,4 @@ pids/
 *.seed
 
 src/app/config/firebase-service-account.json
+firebase-service-account.json
