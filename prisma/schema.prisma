@@ -11,3 +11,24 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model RegistrationSession {
+  id     String        @id @default(uuid())
+  email  String
+  type   SessionType
+  status SessionStatus
+  token String @unique
+  
+}
+
+enum SessionType {
+  SELF
+  INVITE
+}
+
+enum SessionStatus {
+  PENDING
+  VERIFIED
+  COMPLETED
+  EXPIRED
+}
