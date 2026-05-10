@@ -17,8 +17,16 @@ model RegistrationSession {
   email  String
   type   SessionType
   status SessionStatus
-  token String @unique
-  
+  token  String        @unique
+
+  invited_by String?
+  company_id String?
+
+  otp_hash String?
+
+  expired_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 enum SessionType {
