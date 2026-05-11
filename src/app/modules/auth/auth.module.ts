@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { OtpService } from 'src/infrastructure/cache/otp.service';
-import { RegistrationSessionRepository } from '../../../domain/auth/repositories/registration_session.repository';
+import { OtpService } from 'src/app/modules/auth/otp/otp.service';
 import { TokenService } from './token/token.service';
+import { RegistrationSessionPrismaRepository } from 'src/infrastructure/database/prisma/repositories/registration_session.repository';
 
 @Module({
   imports: [
@@ -21,7 +21,11 @@ import { TokenService } from './token/token.service';
     AuthService,
     OtpService,
     TokenService,
-    RegistrationSessionRepository,
+    {
+      provide: 'REGISTRATION_SESSION_REPOSITORY',
+      useClass: RegistrationSessionPrismaRepository,
+    },
   ],
+  exports: [AuthService],
 })
 export class AuthModule {}

@@ -1,8 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import Redis from 'ioredis';
-import { OtpService } from 'src/infrastructure/cache/otp.service';
+import { OtpService } from 'src/app/modules/auth/otp/otp.service';
 import { RegistrationSessionPrismaRepository } from 'src/infrastructure/database/prisma/repositories/registration_session.repository';
 
 @Injectable()
@@ -13,6 +13,7 @@ export class AuthService {
   });
 
   constructor(
+    @Inject('REGISTRATION_SESSION_REPOSITORY')
     private sessionRepo: RegistrationSessionPrismaRepository,
     private otpService: OtpService,
     private jwt: JwtService,
